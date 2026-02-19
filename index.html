@@ -3,36 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ramazan Asistanı</title>
+    <title>Ramazan Asistanı Pro</title>
     <link rel="stylesheet" href="style.css">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1a1a2e">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🌙 Ramazan Asistanı</h1>
+            <h2 id="sehir">Konum Aranıyor...</h2>
             <p id="tarih"></p>
         </header>
 
         <section class="vakitler">
-            <div class="kart" id="imsak-kart">
+            <div class="kart imsak">
                 <span>İmsak</span>
-                <strong id="imsak-vakit">05:42</strong>
+                <strong id="imsak-vakit">--:--</strong>
             </div>
-            <div class="kart" id="iftar-kart">
+            <div class="kart iftar">
                 <span>İftar</span>
-                <strong id="iftar-vakit">19:12</strong>
+                <strong id="iftar-vakit">--:--</strong>
             </div>
         </section>
 
-        <section class="sayac">
+        <section class="sayac-alan">
             <h3>İftara Kalan Süre</h3>
             <div id="kalan-sure">00:00:00</div>
+            <div class="progress-bar"><div id="bar" style="width: 0%"></div></div>
         </section>
 
-        <section class="dualar">
-            <h3>Günün Duası</h3>
-            <p id="gunun-duasi">"Allahümme leke sumtü ve bike amentü..."</p>
-        </section>
+        <button onclick="konumAl()" class="btn-konum">Konumu Güncelle</button>
     </div>
     <script src="script.js"></script>
 </body>
