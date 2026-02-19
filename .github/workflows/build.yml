@@ -26,9 +26,11 @@ jobs:
           cd build_folder
           cordova platform add android
           
-          # KONUM İÇİN EN STABİL EKLENTİLER
+          # KRİTİK EKLENTİLER
           cordova plugin add cordova-plugin-geolocation --save
           cordova plugin add cordova-plugin-android-permissions --save
+          cordova plugin add cordova-plugin-local-notification --save
+          cordova plugin add cordova-plugin-dialogs --save
           
           rm -rf www/*
           cp ../index.html www/
@@ -49,6 +51,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: ramazan-asistani-final
+          name: ramazan-asistani-premium
           path: build_folder/platforms/android/app/build/outputs/apk/debug/app-debug.apk
           
