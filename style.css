@@ -1,23 +1,14 @@
-/* Önceki stillere ek olarak şu modal düzeltmesini mutlaka yap: */
-.modal-content { 
-    background: white; 
-    color: #333; 
-    padding: 25px; 
-    border-radius: 25px; 
-    width: 90%; 
-    max-height: 90vh; /* Ekranın %90'ını kaplasın */
-    overflow-y: auto; /* İçerik taşarsa kaydırılsın */
-    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+/* Önceki stillere ek olarak */
+.imsakiye-container {
+    flex-grow: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    background: rgba(0,0,0,0.6); border-radius: 20px; margin-top: 10px;
 }
-
-select { 
-    display: block !important; /* Görünürlüğü garanti et */
-    width: 100%; 
-    padding: 16px; 
-    margin-bottom: 15px; 
-    border-radius: 12px; 
-    border: 2px solid #ddd; 
-    font-size: 16px; 
-    background: #fff; 
-    color: #000;
+.imsakiye-row { 
+    display: grid; grid-template-columns: 1fr 2fr 1fr 1fr; 
+    padding: 12px; text-align: center; border-bottom: 1px solid #333; 
 }
+.modal-content {
+    background: white; color: #333; padding: 25px; border-radius: 30px;
+    width: 90%; max-height: 80vh; overflow-y: auto;
+}
+select { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; font-size: 16px; }
