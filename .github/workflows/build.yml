@@ -22,12 +22,13 @@ jobs:
 
       - name: Create Cordova Project
         run: |
-          # Projeyi oluştur
           cordova create build_folder com.example.ramazan RamazanAsistani
           cd build_folder
           cordova platform add android
           
-          # Senin dosyalarını kopyala
+          # KONUM İZNİ İÇİN KRİTİK PLUGİN
+          cordova plugin add cordova-plugin-geolocation --save
+          
           rm -rf www/*
           cp ../index.html www/
           cp ../style.css www/
@@ -42,7 +43,6 @@ jobs:
       - name: Build APK
         run: |
           cd build_folder
-          # Cordova ile Android derlemesi yap
           cordova build android --debug
 
       - name: Upload APK
@@ -50,4 +50,3 @@ jobs:
         with:
           name: ramazan-asistani-apk
           path: build_folder/platforms/android/app/build/outputs/apk/debug/app-debug.apk
-          
