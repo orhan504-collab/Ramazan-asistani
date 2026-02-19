@@ -3,55 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ramazan Pro Max</title>
+    <title>81 İl Ramazan Pro</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body id="main-body">
     <div id="city-bg" class="city-overlay"></div>
-    
     <div class="app-container">
         <div class="world-section">
             <div class="earth-sphere"></div>
             <div class="counter-box" onclick="modalAc()">
                 <div id="aktif-konum">Konum Seç 📍</div>
                 <h1 id="sayaç">00:00:00</h1>
-                <p id="durum-etiketi">Yükleniyor...</p>
+                <p id="durum-etiketi">Vakit Hesaplanıyor...</p>
             </div>
         </div>
-
         <div class="vakit-row">
             <div class="v-card"><span>İmsak</span><b id="t-imsak">--:--</b></div>
             <div class="v-card iftar-highlight"><span>İftar</span><b id="t-iftar">--:--</b></div>
         </div>
-
-        <div class="menu-box">
-            <h5>🌙 Günün İftar Menüsü</h5>
-            <p id="iftar-menu">Şehir seçiniz...</p>
-        </div>
-
         <div class="imsakiye-container">
-            <div class="liste-header">
-                <span>GÜN</span><span>TARİH</span><span>İMSAK</span><span>İFTAR</span>
-            </div>
-            <div id="liste-icerik">
-                </div>
+            <div class="liste-header"><span>GÜN</span><span>TARİH</span><span>İMSAK</span><span>İFTAR</span></div>
+            <div id="liste-icerik"></div>
         </div>
     </div>
-
     <div id="il-modal" class="modal-overlay">
         <div class="modal-content">
-            <h3>Konumunuzu Belirleyin</h3>
-            <div class="select-wrapper">
-                <select id="il-liste" onchange="ilceGuncelle()"></select>
-                <select id="ilce-liste"></select>
-            </div>
-            <button class="btn-save" onclick="konumKaydet()">AYARLARI KAYDET</button>
+            <h3>81 İl Seçimi</h3>
+            <select id="il-liste" onchange="ilceGuncelle()"></select>
+            <select id="ilce-liste"></select>
+            <button class="btn-save" onclick="konumKaydet()">UYGULA</button>
             <button class="btn-close" onclick="modalKapat()">KAPAT</button>
         </div>
     </div>
-
-    <audio id="ezan-sesi" src="https://www.soundboard.com/handler/DownLoadTrack.ashx?cliptoken=645474" preload="auto"></audio>
-
+    <audio id="ezan-sesi" src="https://www.soundboard.com/handler/DownLoadTrack.ashx?cliptoken=645474"></audio>
     <script src="script.js"></script>
 </body>
 </html>
