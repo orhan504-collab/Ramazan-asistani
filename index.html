@@ -3,10 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ramazan Asistanı Pro</title>
+    <title>Ramazan Pro: Dünya Modu</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body id="body-bg">
+    <div class="world-container">
+        <div class="world"></div>
+    </div>
+
     <div class="app-wrapper">
         <div class="main-card">
             <header>
@@ -28,32 +32,22 @@
         <div class="rehber-card">
             <div class="rehber-item">
                 <h4>📖 Günün Ayeti</h4>
-                <p id="gunun-ayeti">Yükleniyor...</p>
-            </div>
-            <div class="rehber-item">
-                <h4>💬 Günün Hadisi</h4>
-                <p id="gunun-hadisi">Yükleniyor...</p>
+                <p id="gunun-ayeti">...</p>
             </div>
             <div class="rehber-item">
                 <h4>🤲 Günün Duası</h4>
-                <p id="gunun-duasi">Yükleniyor...</p>
+                <p id="gunun-duasi">...</p>
             </div>
         </div>
 
         <div class="imsakiye-list">
-            <h3>🌙 30 Günlük İmsakiye</h3>
-            <div class="table-header">
-                <span>Gün</span>
-                <span>Tarih</span>
-                <span>İmsak</span>
-                <span>İftar</span>
-            </div>
+            <h3>🌙 İmsakiye</h3>
             <div id="imsakiye-body"></div>
         </div>
         
         <div class="actions">
-            <button onclick="konumAl()" class="btn-sm">🔄 Yenile</button>
-            <button onclick="manuelSehir()" class="btn-sm">🏙️ Şehir Değiştir</button>
+            <button onclick="konumAl()" class="btn-sm">🔄 Konum</button>
+            <button onclick="manuelSehir()" class="btn-sm">🏙️ Şehir</button>
         </div>
     </div>
     <script src="script.js"></script>
