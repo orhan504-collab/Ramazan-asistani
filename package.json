@@ -1,0 +1,8 @@
+{
+  "name": "ramazan-asistani",
+  "version": "1.0.0",
+  "main": "index.html",
+  "scripts": {
+    "build": "mkdir -p dist && cp index.html style.css script.js dist/"
+  }
+}
