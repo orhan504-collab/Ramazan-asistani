@@ -29,8 +29,12 @@
             <div id="kalan-sure">00:00:00</div>
         </section>
 
-        <button onclick="konumAl()" class="btn-konum">Konumu Güncelle</button>
-        <p id="hata-mesaji" style="color: #ff4d4d; font-size: 0.8rem; margin-top: 10px;"></p>
+        <div class="button-group">
+            <button onclick="konumAl()" class="btn-primary">🔄 Konumu Güncelle</button>
+            <button onclick="manuelSehir()" class="btn-secondary">🏙️ Şehir Seç</button>
+        </div>
+        
+        <p id="hata-mesaji"></p>
     </div>
     <script src="script.js"></script>
 </body>
