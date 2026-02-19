@@ -3,6 +3,7 @@ name: Web to APK Builder
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch: # İstersen elle de başlatabilmen için
 
 jobs:
   build:
@@ -10,40 +11,41 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Install Android SDK
-        uses: android-actions/setup-android@v2
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Build Web Assets
         run: |
           mkdir -p www
-          cp index.html style.css script.js www/
+          # Dosyaların ana dizinde olduğunu varsayıyoruz
+          cp index.html style.css script.js www/ || echo "Dosyalar kopyalanırken hata oluştu!"
 
-      - name: Create Android Project (Bubblewrap)
+      - name: Clone Web-to-APK Project
         run: |
-          npm install -g @bubblewrap/cli
-          # Bu kısım web kodlarını hızlıca Android projesine çevirir
-          bubblewrap init --manifest=https://raw.githubusercontent.com/${{ github.repository }}/main/manifest.json || true
-          
+          git clone https://github.com/Sripad-Kiran/Web-to-APK-Project.git
+          # Senin web dosyalarını projenin içine yerleştiriyoruz
+          rm -rf Web-to-APK-Project/app/src/main/assets/*
+          cp -r www/* Web-to-APK-Project/app/src/main/assets/
+
       - name: Build APK with Gradle
         run: |
-          # Basit ve hızlı bir WebView APK oluşturucu
-          git clone https://github.com/Sripad-Kiran/Web-to-APK-Project.git
-          cp -r www/* Web-to-APK-Project/app/src/main/assets/
           cd Web-to-APK-Project
           chmod +x gradlew
+          # Debug APK oluşturuyoruz (İmza gerektirmez, hemen kurulur)
           ./gradlew assembleDebug
 
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: ramazan-asistani-apk
+          name: ramazan-asistani-v1
           path: Web-to-APK-Project/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
           
