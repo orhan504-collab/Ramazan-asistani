@@ -1,1 +1,49 @@
+name: Web to APK Builder
 
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Install Android SDK
+        uses: android-actions/setup-android@v2
+
+      - name: Build Web Assets
+        run: |
+          mkdir -p www
+          cp index.html style.css script.js www/
+
+      - name: Create Android Project (Bubblewrap)
+        run: |
+          npm install -g @bubblewrap/cli
+          # Bu kısım web kodlarını hızlıca Android projesine çevirir
+          bubblewrap init --manifest=https://raw.githubusercontent.com/${{ github.repository }}/main/manifest.json || true
+          
+      - name: Build APK with Gradle
+        run: |
+          # Basit ve hızlı bir WebView APK oluşturucu
+          git clone https://github.com/Sripad-Kiran/Web-to-APK-Project.git
+          cp -r www/* Web-to-APK-Project/app/src/main/assets/
+          cd Web-to-APK-Project
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: ramazan-asistani-apk
+          path: Web-to-APK-Project/app/build/outputs/apk/debug/app-debug.apk
+          
