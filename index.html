@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ezanlı Ramazan Asistanı Pro</title>
     
-    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2000/2000780.png" type="image/png">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2000/2000780.png">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2000/2000780.png?v=1" type="image/png">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2000/2000780.png?v=1">
     
     <link rel="stylesheet" href="style.css">
 </head>
@@ -38,26 +38,14 @@
         </div>
     </div>
 
-    <div id="tebrik-karti" onclick="this.style.display='none'">
-        <div class="kart-ic">
-            <h2>🌙 Allah Kabul Etsin</h2>
-            <p>"Allahım senin rızan için oruç tuttum, senin rızkınla orucumu açtım."</p>
-            <button class="modal-btn">AMİN</button>
-        </div>
-    </div>
-
     <div id="modal" class="modal-bg">
         <div class="modal-content">
             <h3>Konum Seçimi</h3>
             <select id="il-select" onchange="ilceDoldur()"></select>
             <select id="ilce-select"></select>
             <button onclick="kaydet()" class="save-btn">AYARLARI KAYDET</button>
-            <button onclick="modalKapat()" class="close-btn">İPTAL</button>
         </div>
     </div>
-
-    <audio id="ezan" src="https://www.soundboard.com/handler/DownLoadTrack.ashx?cliptoken=645474" preload="auto"></audio>
-    <audio id="uyari-sesi" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3" preload="auto"></audio>
 
     <script src="script.js"></script>
 </body>
