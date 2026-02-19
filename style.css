@@ -1,40 +1,50 @@
-/* Kaydırma Sorununu Çözen CSS */
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-body { font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; justify-content: center; overflow: hidden; background-color: #0f2027; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: hidden; background: #000; color: white; }
 
-.sky-day { background: linear-gradient(to bottom, #2193b0, #6dd5ed) !important; }
-.sky-sunset { background: linear-gradient(to bottom, #ee0979, #ff6a00) !important; }
-.sky-night { background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364) !important; }
-
-.app-content { width: 94%; max-width: 450px; padding: 20px 0; display: flex; flex-direction: column; height: 100%; color: white; }
-
-.glass-header { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); border-radius: 20px; padding: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.2); margin-bottom: 15px; }
-#sayaç { font-size: 3rem; font-weight: bold; }
-
-.vakit-kartlari { display: flex; gap: 10px; margin-bottom: 15px; }
-.v-box { flex: 1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; text-align: center; border-bottom: 4px solid #ffd700; }
-.v-box b { display: block; font-size: 1.4rem; }
-
-.menu-kart { background: rgba(255, 215, 0, 0.1); border-radius: 15px; padding: 15px; border-left: 5px solid #ffd700; margin-bottom: 15px; }
-
-.imsakiye-liste { background: rgba(0,0,0,0.2); border-radius: 20px; padding: 15px; flex-grow: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-.liste-baslik, .imsakiye-row { display: grid; grid-template-columns: 1fr 2fr 1fr 1fr; text-align: center; font-size: 0.85rem; padding: 10px 0; }
-
-/* MODAL VE KAYDIRMA AYARLARI */
-.modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; align-items:center; justify-content:center; }
-.modal-ic { background: white; color: black; padding: 25px; border-radius: 25px; width: 90%; max-width: 380px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-
-.secim-grubu { text-align: left; margin-bottom: 15px; }
-.secim-grubu label { font-weight: bold; display: block; margin-bottom: 5px; color: #555; }
-
-/* Mobil Kaydırmayı Kolaylaştıran Select Yapısı */
-select { 
-    width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #eee; 
-    font-size: 16px; /* 16px altı mobilde otomatik zoom yapar, bu yüzden 16px idealdir */
-    background: #f9f9f9; color: #333; appearance: none; -webkit-appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat; background-position: right 10px center;
+/* Şehre Özel Arka Plan */
+.city-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-size: cover; background-position: center;
+    filter: brightness(0.4) blur(2px); z-index: -2;
+    transition: 1s ease-in-out;
 }
 
-.kaydet-btn { width: 100%; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
-.kapat-btn { width: 100%; padding: 10px; background: transparent; color: #999; border: none; margin-top: 10px; font-size: 0.9rem; }
+/* Dönen Dünya Animasyonu */
+.world-container {
+    position: relative; width: 100%; height: 280px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; margin-top: 10px;
+}
+
+.earth {
+    width: 220px; height: 220px;
+    background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/The_Earth_seen_from_Apollo_17.jpg/1200px-The_Earth_seen_from_Apollo_17.jpg');
+    background-size: cover; border-radius: 50%;
+    box-shadow: inset -20px -20px 50px #000, 0 0 50px rgba(100, 149, 237, 0.3);
+    animation: rotateEarth 20s linear infinite;
+}
+
+@keyframes rotateEarth {
+    from { background-position: 0 0; }
+    to { background-position: 440px 0; }
+}
+
+.counter-overlay {
+    position: absolute; text-align: center; z-index: 5;
+    text-shadow: 0 0 15px rgba(0,0,0,0.8);
+}
+
+#sayaç { font-size: 3.5rem; font-weight: 900; letter-spacing: -1px; }
+
+/* Arayüz Elemanları */
+.app-content { width: 92%; margin: auto; height: 100%; display: flex; flex-direction: column; }
+.vakit-kartlari { display: flex; gap: 10px; margin: 15px 0; }
+.v-box { flex: 1; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 15px; text-align: center; border-bottom: 3px solid #ffd700; backdrop-filter: blur(5px); }
+.menu-kart { background: rgba(255,215,0,0.15); padding: 15px; border-radius: 15px; border-left: 5px solid #ffd700; margin-bottom: 15px; }
+.imsakiye-liste { background: rgba(0,0,0,0.5); border-radius: 20px; padding: 15px; flex-grow: 1; overflow-y: auto; margin-bottom: 10px; }
+
+/* Seçim Alanı */
+.modal { display: none; position: fixed; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; align-items: center; justify-content: center; }
+.modal-ic { background: #fff; padding: 25px; border-radius: 25px; width: 85%; color: #333; }
+select { width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 10px; font-size: 1rem; border: 1px solid #ddd; }
+.kaydet-btn { width: 100%; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 10px; font-weight: bold; }
