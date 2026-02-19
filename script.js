@@ -1,30 +1,37 @@
-document.addEventListener("deviceready", onDeviceReady, false);
+// Cihaz hazır olduğunda çalışacak ana fonksiyon
+document.addEventListener("deviceready", function() {
+    console.log("Cihaz hazır...");
+    const permissions = cordova.plugins.permissions;
+    const list = [
+        permissions.ACCESS_FINE_LOCATION,
+        permissions.ACCESS_COARSE_LOCATION
+    ];
 
-function onDeviceReady() {
-    // Android'den konum izni iste
-    var permissions = cordova.plugins.permissions;
-    permissions.requestPermission(permissions.ACCESS_FINE_LOCATION, function(status) {
+    // İzinleri kontrol et ve iste
+    permissions.requestPermissions(list, function(status) {
         if (status.hasPermission) {
-            konumAl();
+            konumAl(); // İzin varsa direkt konum al
         } else {
-            document.getElementById('sehir').innerText = "Konum İzni Gerekli";
+            alert("Uygulamanın çalışması için konum izni şarttır.");
         }
     }, function() {
-        document.getElementById('sehir').innerText = "İzin Hatası";
+        alert("İzin istenirken hata oluştu.");
     });
-}
+}, false);
 
 function konumAl() {
     const sehirEtiketi = document.getElementById('sehir');
+    const hataEtiketi = document.getElementById('hata-mesaji');
     sehirEtiketi.innerText = "Konum aranıyor...";
 
+    // Daha agresif konum alma ayarları
     navigator.geolocation.getCurrentPosition(vakitleriGetir, function(err) {
-        sehirEtiketi.innerText = "Konum bulunamadı!";
-        document.getElementById('hata-mesaji').innerText = "Lütfen GPS'i açın.";
+        sehirEtiketi.innerText = "Konum alınamadı!";
+        hataEtiketi.innerText = "Hata Kodu: " + err.code + " - Lütfen GPS'i ve İnterneti kontrol edin.";
     }, {
-        enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 0
+        enableHighAccuracy: true, // GPS'i zorla açtırır
+        timeout: 20000,           // 20 saniye bekle
+        maximumAge: 0             // Eski konumu kullanma
     });
 }
 
@@ -35,20 +42,23 @@ async function vakitleriGetir(position) {
     const dateStr = `${bugun.getDate()}-${bugun.getMonth() + 1}-${bugun.getFullYear()}`;
 
     try {
+        // API çağrısını yap
         const response = await fetch(`https://api.aladhan.com/v1/timings/${dateStr}?latitude=${lat}&longitude=${lng}&method=13`);
         const data = await response.json();
         
         const vakitler = data.data.timings;
         document.getElementById('imsak-vakit').innerText = vakitler.Imsak;
         document.getElementById('iftar-vakit').innerText = vakitler.Maghrib;
-        document.getElementById('sehir').innerText = "📍 Mevcut Konumunuz";
+        document.getElementById('sehir').innerText = "📍 Vakitler Güncellendi";
+        document.getElementById('hata-mesaji').innerText = ""; // Hatayı temizle
         
         geriSayimiBaslat(vakitler.Maghrib);
     } catch (error) {
-        document.getElementById('sehir').innerText = "Vakitler alınamadı!";
+        document.getElementById('sehir').innerText = "Vakitler çekilemedi!";
     }
 }
 
+// Geri sayım motoru (Aynı kalabilir)
 let sayacInterval;
 function geriSayimiBaslat(iftarVakti) {
     if(sayacInterval) clearInterval(sayacInterval);
@@ -72,9 +82,5 @@ function geriSayimiBaslat(iftarVakti) {
     }, 1000);
 }
 
+// Sayfa başlığı için tarih
 document.getElementById('tarih').innerText = new Date().toLocaleDateString('tr-TR');
-
-// Tarayıcı testi için (Cordova yoksa)
-if (!window.cordova) {
-    konumAl();
-}
