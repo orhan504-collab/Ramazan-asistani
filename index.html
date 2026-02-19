@@ -3,52 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ramazan Pro Premium</title>
+    <title>Ramazan Premium</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body id="main-body">
-    <div class="dynamic-bg"></div>
-    <div class="moving-world"></div>
-
-    <div class="glass-container">
-        <div class="header" onclick="showPicker()">
-            <div id="loc-text">📍 Konum Belirleniyor...</div>
-            <h1 id="countdown">00:00:00</h1>
-            <p>İftara Kalan Süre</p>
+<body id="main-body" class="sky-night">
+    <div class="stars-overlay"></div>
+    
+    <div class="app-content">
+        <div class="glass-header" onclick="modalAc()">
+            <div id="aktif-konum">📍 Konum Seçin</div>
+            <h1 id="sayaç">00:00:00</h1>
+            <p id="durum-etiket">İftara Kalan Süre</p>
         </div>
 
-        <div class="vakit-cards">
-            <div class="v-card">
-                <span class="v-label">İMSAK</span>
-                <span id="imsak-t" class="v-time">--:--</span>
-            </div>
-            <div class="v-card highlight">
-                <span class="v-label">İFTAR</span>
-                <span id="iftar-t" class="v-time">--:--</span>
-            </div>
+        <div class="vakit-kartlari">
+            <div class="v-box"><span>İmsak</span><b id="t-imsak">--:--</b></div>
+            <div class="v-box iftar"><span>İftar</span><b id="t-iftar">--:--</b></div>
         </div>
 
-        <div class="daily-box">
-            <div class="daily-item">
-                <h4>📖 GÜNÜN AYETİ</h4>
-                <p id="ayet-p">"Allah sabredenlerle beraberdir."</p>
-            </div>
+        <div class="rehber-kart">
+            <h4 id="rehber-baslik">Günün Ayeti</h4>
+            <p id="rehber-icerik">"Allah sabredenlerle beraberdir."</p>
         </div>
 
-        <div class="imsakiye-wrapper">
-            <h3>🌙 30 GÜNLÜK İMSAKİYE</h3>
-            <div class="table-head"><span>GÜN</span><span>TARİH</span><span>İMSAK</span><span>İFTAR</span></div>
-            <div id="imsakiye-list"></div>
+        <div class="imsakiye-liste">
+            <div class="liste-baslik"><span>GÜN</span><span>TARİH</span><span>İMSAK</span><span>İFTAR</span></div>
+            <div id="liste-icerik"></div>
         </div>
     </div>
 
-    <div id="picker-modal" class="modal">
-        <div class="modal-content">
-            <h3>Şehir ve İlçe Seçin</h3>
-            <select id="city-select" onchange="loadDistricts()"><option value="">İl Seçiniz</option></select>
-            <select id="district-select"><option value="">İlçe Seçiniz</option></select>
-            <button class="save-btn" onclick="saveLocation()">UYGULA</button>
-            <button class="close-btn" onclick="hidePicker()">KAPAT</button>
+    <div id="il-modal" class="modal">
+        <div class="modal-ic">
+            <h3>Şehir Seçiniz</h3>
+            <select id="il-liste"></select>
+            <button class="kaydet-btn" onclick="konumKaydet()">UYGULA</button>
+            <button class="kapat-btn" onclick="modalKapat()">İPTAL</button>
         </div>
     </div>
 
