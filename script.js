@@ -1,32 +1,27 @@
+const camiResimleri = {"İstanbul": "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b","Ankara": "https://images.unsplash.com/photo-1581442030095-65481749890a","İzmir": "https://images.unsplash.com/photo-1570133435163-95240f96860d","Bursa": "https://images.unsplash.com/photo-1528660544347-949395277494","Edirne": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Selimiye_Mosque_Night.jpg"};
+
 document.addEventListener("DOMContentLoaded", async () => {
     rainEffect();
     await illeriGetir();
-    const k = JSON.parse(localStorage.getItem('ramazan_2026_config'));
+    const k = JSON.parse(localStorage.getItem('ramazan_2026_pro'));
     if(k) verileriGetir(k.il, k.ilce);
     else modalAc();
 });
 
+// RAIN EFEKTİ (MERKEZİ DİZİLİM)
 function rainEffect() {
     const container = document.getElementById('rain-container');
     const text = "YAPIM: ORHAN BAŞBAKICI";
     container.innerHTML = "";
-
     text.split("").forEach((char, i) => {
         const span = document.createElement('span');
         span.innerText = char === " " ? "\u00A0" : char;
         span.className = "rain-char";
-        
-        // Harfleri başlangıçta ekranın üstünde rastgele yatay konumlara dağıt
         span.style.left = Math.random() * 90 + 5 + "%";
-        
         container.appendChild(span);
-
-        // Yağmur düşüş gecikmesi
         setTimeout(() => {
-            span.style.top = "20px"; // Aşağı düşür
-            
+            span.style.top = "20px";
             setTimeout(() => {
-                // Harfi sabitlenen sınıfa sok ve yan yana dizilmesi için stili temizle
                 span.classList.add("fixed-char");
                 span.style.left = "auto";
                 span.style.position = "relative";
@@ -35,48 +30,27 @@ function rainEffect() {
     });
 }
 
-// ... (illeriGetir, ilceDoldur ve verileriGetir fonksiyonları önceki gibi devam ediyor) ...
-// Not: Şubat ve Mart birleştirme kodu yukarıdaki verileriGetir içinde aktif kalmalı.
-
-async function illeriGetir() {
-    try {
-        const res = await fetch('https://turkiyeapi.dev/api/v1/provinces');
-        const json = await res.json();
-        const s = document.getElementById('il-select');
-        s.innerHTML = '<option value="">İl Seçiniz</option>';
-        json.data.sort((a, b) => a.name.localeCompare(b.name)).forEach(il => {
-            s.innerHTML += `<option value="${il.name}">${il.name}</option>`;
-        });
-    } catch (e) { console.log("Hata: İller"); }
+// OTOMATİK KONUM BULMA
+async function otomatikKonumBul() {
+    if (!navigator.geolocation) return alert("Konum desteklenmiyor.");
+    const btn = document.querySelector('.geo-btn');
+    btn.innerText = "Konum Alınıyor...";
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+        try {
+            const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&localityLanguage=tr`);
+            const data = await res.json();
+            let il = data.principalSubdivision.replace(" Province", "").replace(" İli", "");
+            let ilce = data.city || data.locality;
+            localStorage.setItem('ramazan_2026_pro', JSON.stringify({il, ilce}));
+            verileriGetir(il, ilce);
+            modalKapat();
+        } catch (e) { alert("Konum belirlenemedi."); btn.innerText = "📍 KONUMUMU OTOMATİK BUL"; }
+    }, () => { alert("İzin verilmedi."); btn.innerText = "📍 KONUMUMU OTOMATİK BUL"; });
 }
 
-async function ilceDoldur() {
-    const ilAd = document.getElementById('il-select').value;
-    const ilceSec = document.getElementById('ilce-select');
-    ilceSec.innerHTML = '<option>Yükleniyor...</option>';
-    try {
-        const res = await fetch(`https://turkiyeapi.dev/api/v1/provinces?name=${ilAd}`);
-        const json = await res.json();
-        ilceSec.innerHTML = '';
-        json.data[0].districts.forEach(d => {
-            ilceSec.innerHTML += `<option value="${d.name}">${d.name}</option>`;
-        });
-    } catch (e) { ilceSec.innerHTML = `<option value="${ilAd}">Merkez</option>`; }
-}
-
-function modalAc() { document.getElementById('modal').style.display = 'flex'; }
-function modalKapat() { document.getElementById('modal').style.display = 'none'; }
-
-function kaydet() {
-    const il = document.getElementById('il-select').value;
-    const ilce = document.getElementById('ilce-select').value;
-    if(!il || !ilce) return alert("Seçim yapın!");
-    localStorage.setItem('ramazan_2026_config', JSON.stringify({il, ilce}));
-    verileriGetir(il, ilce);
-    modalKapat();
-}
-
+// VERİ MOTORU (ŞUBAT + MART BİRLEŞİK)
 async function verileriGetir(il, ilce) {
+    document.getElementById('city-bg').style.backgroundImage = `url('${camiResimleri[il] || "https://images.unsplash.com/photo-1564769625905-50e93615e769"}')`;
     document.getElementById('location-text').innerText = `${il} / ${ilce} 📍`;
     try {
         const [r2, r3] = await Promise.all([
@@ -87,13 +61,12 @@ async function verileriGetir(il, ilce) {
         const ramadan = [...j2.data, ...j3.data].filter(g => g.date.hijri.month.en.includes("Ramadan") || g.date.hijri.month.en.includes("ama"));
         imsakiyeDoldur(ramadan);
         sayacBaslat();
-    } catch(e) { document.getElementById('label').innerText = "Vakit Hatası!"; }
+    } catch(e) { document.getElementById('label').innerText = "Veri Hatası!"; }
 }
 
 function imsakiyeDoldur(data) {
     const b = document.getElementById('list-body');
-    const now = new Date();
-    b.innerHTML = "";
+    const now = new Date(); b.innerHTML = "";
     data.forEach(g => {
         const d = parseInt(g.date.gregorian.day);
         const m = parseInt(g.date.gregorian.month.number);
@@ -110,7 +83,6 @@ function imsakiyeDoldur(data) {
         row.innerHTML = `<span>${g.date.hijri.day}</span><span>${d} ${g.date.gregorian.month.en.slice(0,3)}</span><span>${ims}</span><span>${ift}</span>`;
         b.appendChild(row);
     });
-    if(!window.vakitler) window.vakitler = { ims: data[0].timings.Imsak.split(' ')[0], ift: data[0].timings.Maghrib.split(' ')[0] };
 }
 
 function sayacBaslat() {
@@ -130,4 +102,27 @@ function sayacBaslat() {
         document.getElementById('timer').innerText = `${hh}:${mm}:${ss}`;
         document.getElementById('label').innerText = e;
     }, 1000);
+}
+
+// YARDIMCI FONKSİYONLAR
+async function illeriGetir() {
+    const res = await fetch('https://turkiyeapi.dev/api/v1/provinces');
+    const json = await res.json();
+    const s = document.getElementById('il-select');
+    s.innerHTML = '<option value="">İl Seçiniz</option>';
+    json.data.sort((a, b) => a.name.localeCompare(b.name)).forEach(il => s.innerHTML += `<option value="${il.name}">${il.name}</option>`);
+}
+async function ilceDoldur() {
+    const ilAd = document.getElementById('il-select').value;
+    const res = await fetch(`https://turkiyeapi.dev/api/v1/provinces?name=${ilAd}`);
+    const json = await res.json();
+    const s = document.getElementById('ilce-select');
+    s.innerHTML = '';
+    json.data[0].districts.forEach(d => s.innerHTML += `<option value="${d.name}">${d.name}</option>`);
+}
+function modalAc() { document.getElementById('modal').style.display = 'flex'; }
+function modalKapat() { document.getElementById('modal').style.display = 'none'; }
+function kaydet() {
+    const il = document.getElementById('il-select').value, ilce = document.getElementById('ilce-select').value;
+    if(il && ilce) { localStorage.setItem('ramazan_2026_pro', JSON.stringify({il, ilce})); verileriGetir(il, ilce); modalKapat(); }
 }
