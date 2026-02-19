@@ -3,38 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ramazan Asistanı</title>
+    <title>Ramazan Asistanı & İmsakiye</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h2 id="sehir">Konum Aranıyor...</h2>
-            <p id="tarih"></p>
-        </header>
+    <div class="app-wrapper">
+        <div class="main-card">
+            <header>
+                <h2 id="sehir">Konum Aranıyor...</h2>
+                <p id="tarih"></p>
+            </header>
 
-        <section class="vakitler">
-            <div class="kart">
-                <span>İmsak</span>
-                <strong id="imsak-vakit">--:--</strong>
+            <div class="current-vakitler">
+                <div class="v-box"><span>İmsak</span><strong id="imsak-vakit">--:--</strong></div>
+                <div class="v-box"><span>İftar</span><strong id="iftar-vakit">--:--</strong></div>
             </div>
-            <div class="kart">
-                <span>İftar</span>
-                <strong id="iftar-vakit">--:--</strong>
+
+            <div class="counter-section">
+                <p>İftara Kalan Süre</p>
+                <div id="kalan-sure">00:00:00</div>
             </div>
-        </section>
 
-        <section class="sayac-alan">
-            <h3>İftara Kalan Süre</h3>
-            <div id="kalan-sure">00:00:00</div>
-        </section>
-
-        <div class="button-group">
-            <button onclick="konumAl()" class="btn-primary">🔄 Konumu Güncelle</button>
-            <button onclick="manuelSehir()" class="btn-secondary">🏙️ Şehir Seç</button>
+            <div class="actions">
+                <button onclick="konumAl()" class="btn-sm">🔄 Yenile</button>
+                <button onclick="manuelSehir()" class="btn-sm">🏙️ Şehir Değiştir</button>
+            </div>
         </div>
-        
-        <p id="hata-mesaji"></p>
+
+        <div class="imsakiye-list">
+            <h3>🌙 30 Günlük İmsakiye</h3>
+            <div class="table-header">
+                <span>Gün</span>
+                <span>Tarih</span>
+                <span>İmsak</span>
+                <span>İftar</span>
+            </div>
+            <div id="imsakiye-body">
+                </div>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
