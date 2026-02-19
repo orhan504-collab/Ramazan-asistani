@@ -1,59 +1,77 @@
 body {
-    background-color: #1a1a2e;
-    color: #ffffff;
+    background-color: #0f3460;
+    color: white;
     font-family: 'Segoe UI', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     margin: 0;
-}
-
-.container {
-    background: #16213e;
-    width: 90%;
-    max-width: 350px;
-    padding: 30px;
-    border-radius: 25px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-    text-align: center;
-    border: 1px solid #0f3460;
-}
-
-.vakitler {
-    display: flex;
-    justify-content: space-between;
-    margin: 30px 0;
-}
-
-.kart {
-    background: #0f3460;
     padding: 15px;
-    border-radius: 15px;
-    width: 45%;
+}
+
+.app-wrapper {
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+.main-card {
+    background: #16213e;
+    padding: 20px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    margin-bottom: 20px;
     border: 1px solid #e94560;
 }
 
-.kart strong {
-    display: block;
-    font-size: 1.5rem;
-    color: #ffd700;
+.current-vakitler {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+}
+
+.v-box {
+    background: #1a1a2e;
+    padding: 10px 20px;
+    border-radius: 12px;
+    border-bottom: 3px solid #ffd700;
 }
 
 #kalan-sure {
-    font-size: 3rem;
+    font-size: 2.5rem;
     font-weight: bold;
     color: #e94560;
-    text-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
 }
 
-.btn-konum {
-    background: #e94560;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 10px;
-    margin-top: 20px;
-    cursor: pointer;
+.imsakiye-list {
+    background: #16213e;
+    border-radius: 20px;
+    padding: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.table-header, .imsakiye-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1.5fr 1.5fr;
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #0f3460;
+}
+
+.table-header {
     font-weight: bold;
+    color: #ffd700;
+    position: sticky;
+    top: 0;
+    background: #16213e;
+}
+
+.imsakiye-row:nth-child(even) { background: #1a1a2e; }
+
+.btn-sm {
+    background: #0f3460;
+    color: white;
+    border: 1px solid #e94560;
+    padding: 5px 12px;
+    border-radius: 8px;
+    margin: 5px;
+    font-size: 0.8rem;
 }
