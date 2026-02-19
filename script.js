@@ -1,30 +1,42 @@
-const camiResimleri = {"İstanbul": "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b","Ankara": "https://images.unsplash.com/photo-1581442030095-65481749890a","İzmir": "https://images.unsplash.com/photo-1570133435163-95240f96860d","Bursa": "https://images.unsplash.com/photo-1528660544347-949395277494","Edirne": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Selimiye_Mosque_Night.jpg"};
-
 document.addEventListener("DOMContentLoaded", async () => {
     rainEffect();
     await illeriGetir();
-    const k = JSON.parse(localStorage.getItem('ramazan_2026_final'));
+    const k = JSON.parse(localStorage.getItem('ramazan_2026_config'));
     if(k) verileriGetir(k.il, k.ilce);
     else modalAc();
 });
 
-// RAIN EFEKTİ MOTORU
 function rainEffect() {
     const container = document.getElementById('rain-container');
     const text = "YAPIM: ORHAN BAŞBAKICI";
     container.innerHTML = "";
+
     text.split("").forEach((char, i) => {
         const span = document.createElement('span');
         span.innerText = char === " " ? "\u00A0" : char;
         span.className = "rain-char";
-        span.style.left = `calc(50% - ${(text.length/2)*12}px + ${i*12}px)`;
+        
+        // Harfleri başlangıçta ekranın üstünde rastgele yatay konumlara dağıt
+        span.style.left = Math.random() * 90 + 5 + "%";
+        
         container.appendChild(span);
+
+        // Yağmur düşüş gecikmesi
         setTimeout(() => {
-            span.style.top = "15px";
-            setTimeout(() => span.classList.add("fixed-char"), 1500);
+            span.style.top = "20px"; // Aşağı düşür
+            
+            setTimeout(() => {
+                // Harfi sabitlenen sınıfa sok ve yan yana dizilmesi için stili temizle
+                span.classList.add("fixed-char");
+                span.style.left = "auto";
+                span.style.position = "relative";
+            }, 1200);
         }, Math.random() * 2000);
     });
 }
+
+// ... (illeriGetir, ilceDoldur ve verileriGetir fonksiyonları önceki gibi devam ediyor) ...
+// Not: Şubat ve Mart birleştirme kodu yukarıdaki verileriGetir içinde aktif kalmalı.
 
 async function illeriGetir() {
     try {
@@ -59,13 +71,12 @@ function kaydet() {
     const il = document.getElementById('il-select').value;
     const ilce = document.getElementById('ilce-select').value;
     if(!il || !ilce) return alert("Seçim yapın!");
-    localStorage.setItem('ramazan_2026_final', JSON.stringify({il, ilce}));
+    localStorage.setItem('ramazan_2026_config', JSON.stringify({il, ilce}));
     verileriGetir(il, ilce);
     modalKapat();
 }
 
 async function verileriGetir(il, ilce) {
-    document.getElementById('city-bg').style.backgroundImage = `url('${camiResimleri[il] || "https://images.unsplash.com/photo-1564769625905-50e93615e769"}')`;
     document.getElementById('location-text').innerText = `${il} / ${ilce} 📍`;
     try {
         const [r2, r3] = await Promise.all([
