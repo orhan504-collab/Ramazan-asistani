@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ramazan Premium</title>
+    <title>Ramazan Pro</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body id="main-body" class="sky-night">
     <div class="stars-overlay"></div>
     
     <div class="app-content">
-        <div class="glass-header" onclick="modalAc()">
-            <div id="aktif-konum">📍 Konum Seçin</div>
+        <div class="glass-header">
+            <div id="aktif-konum" onclick="modalAc()">📍 Şehir Seçmek İçin Tıklayın</div>
             <h1 id="sayaç">00:00:00</h1>
-            <p id="durum-etiket">İftara Kalan Süre</p>
+            <p>İftara Kalan Süre</p>
         </div>
 
         <div class="vakit-kartlari">
@@ -21,23 +21,22 @@
             <div class="v-box iftar"><span>İftar</span><b id="t-iftar">--:--</b></div>
         </div>
 
-        <div class="rehber-kart">
-            <h4 id="rehber-baslik">Günün Ayeti</h4>
-            <p id="rehber-icerik">"Allah sabredenlerle beraberdir."</p>
-        </div>
-
         <div class="imsakiye-liste">
             <div class="liste-baslik"><span>GÜN</span><span>TARİH</span><span>İMSAK</span><span>İFTAR</span></div>
-            <div id="liste-icerik"></div>
+            <div id="liste-icerik">
+                <p style="text-align:center; padding:20px; color:#aaa;">Lütfen bir şehir seçin...</p>
+            </div>
         </div>
     </div>
 
     <div id="il-modal" class="modal">
         <div class="modal-ic">
             <h3>Şehir Seçiniz</h3>
-            <select id="il-liste"></select>
+            <select id="il-liste">
+                <option value="">Seçiniz...</option>
+            </select>
             <button class="kaydet-btn" onclick="konumKaydet()">UYGULA</button>
-            <button class="kapat-btn" onclick="modalKapat()">İPTAL</button>
+            <button class="kapat-btn" onclick="modalKapat()">KAPAT</button>
         </div>
     </div>
 
