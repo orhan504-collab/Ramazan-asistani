@@ -26,8 +26,10 @@ jobs:
           cd build_folder
           cordova platform add android
           
-          # KONUM İZNİ İÇİN KRİTİK PLUGİN
+          # KONUM VE BİLDİRİM İZİNLERİ İÇİN EKLENTİLER
           cordova plugin add cordova-plugin-geolocation --save
+          cordova plugin add cordova-plugin-android-permissions --save
+          cordova plugin add cordova-plugin-dialogs --save
           
           rm -rf www/*
           cp ../index.html www/
@@ -50,3 +52,4 @@ jobs:
         with:
           name: ramazan-asistani-apk
           path: build_folder/platforms/android/app/build/outputs/apk/debug/app-debug.apk
+          
