@@ -1,34 +1,26 @@
-// Cami Resimleri ve İlçe Veritabanı
-const sehirAyarlari = {
-    "İstanbul": { cami: "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b", ilceler: ["Fatih", "Beşiktaş", "Üsküdar", "Esenyurt", "Kadıköy"] },
-    "Ankara": { cami: "https://images.unsplash.com/photo-1590075865003-e48267af5f9d", ilceler: ["Çankaya", "Keçiören", "Mamak", "Etimesgut"] },
-    "Edirne": { cami: "https://upload.wikimedia.org/wikipedia/commons/e/e0/Selimiye_Mosque_Night.jpg", ilceler: ["Merkez", "Keşan", "Uzunköprü"] },
+const sehirData = {
+    "İstanbul": { cami: "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b", ilceler: ["Fatih", "Beşiktaş", "Üsküdar", "Kadıköy", "Esenyurt", "Pendik", "Beylikdüzü"] },
+    "Ankara": { cami: "https://images.unsplash.com/photo-1581442030095-65481749890a", ilceler: ["Çankaya", "Keçiören", "Mamak", "Etimesgut", "Sincan", "Yenimahalle"] },
+    "İzmir": { cami: "https://images.unsplash.com/photo-1570133435163-95240f96860d", ilceler: ["Konak", "Karşıyaka", "Bornova", "Buca", "Çiğli"] },
     "Bursa": { cami: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Bursa_Ulu_Camii_2.jpg", ilceler: ["Osmangazi", "Nilüfer", "Yıldırım"] }
 };
 
-const menuler = ["Mercimek Çorbası, Karnıyarık, Pilav, Güllaç", "Yayla Çorbası, Köfte, Salat, Sütlaç", "Ezogelin, Tavuk Sote, Bulgur, Kadayıf"];
+const yemekler = ["Mercimek Çorbası, Tas Kebabı, Pilav, Güllaç", "Tarhana Çorbası, Karnıyarık, Cacık, Sütlaç", "Yayla Çorbası, Tavuk Sote, Bulgur, Kadayıf"];
 
 document.addEventListener("DOMContentLoaded", () => {
-    // İlleri Yükle
-    const ilSec = document.getElementById('il-liste');
-    ilSec.innerHTML = '<option value="">İl Seçin</option>';
-    Object.keys(sehirAyarlari).forEach(il => {
-        ilSec.innerHTML += `<option value="${il}">${il}</option>`;
-    });
-
-    const kayitli = JSON.parse(localStorage.getItem('userPos'));
-    if(kayitli) verileriGetir(kayitli.il, kayitli.ilce);
+    const s = document.getElementById('il-liste');
+    s.innerHTML = '<option value="">Şehir Seçiniz...</option>';
+    Object.keys(sehirData).forEach(il => s.innerHTML += `<option value="${il}">${il}</option>`);
+    
+    const k = JSON.parse(localStorage.getItem('ramazan_pos'));
+    if(k) verileriGetir(k.il, k.ilce);
 });
 
 function ilceYukle() {
     const il = document.getElementById('il-liste').value;
-    const ilceSec = document.getElementById('ilce-liste');
-    ilceSec.innerHTML = '';
-    if(sehirAyarlari[il]) {
-        sehirAyarlari[il].ilceler.forEach(i => {
-            ilceSec.innerHTML += `<option value="${i}">${i}</option>`;
-        });
-    }
+    const s = document.getElementById('ilce-liste');
+    s.innerHTML = '';
+    if(sehirData[il]) sehirData[il].ilceler.forEach(i => s.innerHTML += `<option value="${i}">${i}</option>`);
 }
 
 function modalAc() { document.getElementById('il-modal').style.display = 'flex'; }
@@ -37,65 +29,81 @@ function modalKapat() { document.getElementById('il-modal').style.display = 'non
 function konumKaydet() {
     const il = document.getElementById('il-liste').value;
     const ilce = document.getElementById('ilce-liste').value;
-    if(!il || !ilce) return;
-    localStorage.setItem('userPos', JSON.stringify({il, ilce}));
+    if(!il) return;
+    localStorage.setItem('ramazan_pos', JSON.stringify({il, ilce}));
     verileriGetir(il, ilce);
     modalKapat();
 }
 
 async function verileriGetir(il, ilce) {
-    // Cami Resmini Güncelle
-    document.getElementById('city-bg').style.backgroundImage = `url('${sehirAyarlari[il].cami}')`;
+    document.getElementById('city-bg').style.backgroundImage = `url('${sehirData[il].cami}')`;
     document.getElementById('aktif-konum').innerText = `${il} / ${ilce} 📍`;
-    
-    const yil = new Date().getFullYear();
-    const ay = new Date().getMonth() + 1;
-    
-    try {
-        const res = await fetch(`https://api.aladhan.com/v1/calendarByAddress/${yil}/${ay}?address=${ilce},${il},Turkey&method=13`);
-        const json = await res.json();
-        imsakiyeDoldur(json.data, il);
-    } catch(e) { console.log("Hata!"); }
+    const res = await fetch(`https://api.aladhan.com/v1/calendarByAddress?address=${ilce},${il},Turkey&method=13`);
+    const json = await res.json();
+    imsakiyeDoldur(json.data[new Date().getMonth()].days, il); // Basitleştirilmiş veri çekme
+    window.allData = json.data;
+    hesaplaVeBaslat();
 }
 
-function imsakiyeDoldur(gunler, il) {
+function hesaplaVeBaslat() {
+    if(window.timer) clearInterval(window.timer);
+    window.timer = setInterval(() => {
+        const simdi = new Date();
+        const imsak = document.getElementById('t-imsak').innerText;
+        const iftar = document.getElementById('t-iftar').innerText;
+        
+        const iftarVakti = new Date();
+        iftarVakti.setHours(iftar.split(':')[0], iftar.split(':')[1], 0);
+
+        const sahurVakti = new Date(); // Yarınki imsak
+        sahurVakti.setHours(imsak.split(':')[0], imsak.split(':')[1], 0);
+        if(simdi > sahurVakti) sahurVakti.setDate(sahurVakti.getDate() + 1);
+
+        let hedef, etiket;
+
+        if (simdi < iftarVakti) {
+            hedef = iftarVakti;
+            etiket = "İftara Kalan Süre";
+        } else {
+            hedef = sahurVakti;
+            etiket = "Sahura Kalan Süre";
+        }
+
+        let fark = hedef - simdi;
+        
+        // EZAN OKUMA (Tam vakti geldiğinde 1 saniye kala tetikler)
+        if(fark > 0 && fark < 2000) {
+            document.getElementById('ezan-sesi').play();
+        }
+
+        if(fark < 0) { document.getElementById('sayaç').innerText = "00:00:00"; return; }
+
+        const h = Math.floor(fark/3600000).toString().padStart(2,'0');
+        const m = Math.floor((fark%3600000)/60000).toString().padStart(2,'0');
+        const s = Math.floor((fark%60000)/1000).toString().padStart(2,'0');
+        
+        document.getElementById('sayaç').innerText = `${h}:${m}:${s}`;
+        document.getElementById('durum-etiketi').innerText = etiket;
+    }, 1000);
+}
+
+function imsakiyeDoldur(gunler) {
     const liste = document.getElementById('liste-icerik');
     const bugun = new Date().getDate();
     liste.innerHTML = "";
-    document.getElementById('iftar-menu').innerText = menuler[bugun % menuler.length];
+    document.getElementById('iftar-menu').innerText = yemekler[bugun % yemekler.length];
 
     gunler.forEach(g => {
-        const gunNo = parseInt(g.date.gregorian.day);
-        const imsak = g.timings.Imsak.split(' ')[0];
-        const iftar = g.timings.Maghrib.split(' ')[0];
-
-        if(gunNo === bugun) {
-            document.getElementById('t-imsak').innerText = imsak;
-            document.getElementById('t-iftar').innerText = iftar;
-            window.targetIftar = iftar;
-            sayacBaslat();
+        const d = parseInt(g.date.gregorian.day);
+        const ims = g.timings.Imsak.split(' ')[0];
+        const ift = g.timings.Maghrib.split(' ')[0];
+        if(d === bugun) {
+            document.getElementById('t-imsak').innerText = ims;
+            document.getElementById('t-iftar').innerText = ift;
         }
-        
         const row = document.createElement('div');
-        row.className = "imsakiye-row";
-        row.style.display = "flex"; row.style.padding = "10px 0"; row.style.textAlign = "center";
-        row.innerHTML = `<span style="flex:1">${gunNo}</span><span style="flex:2">${g.date.gregorian.day} ${g.date.gregorian.month.en.slice(0,3)}</span><span style="flex:1">${imsak}</span><span style="flex:1; color:#ffd700">${iftar}</span>`;
+        row.style.display="flex"; row.style.padding="10px 0"; row.style.borderBottom="1px solid #333";
+        row.innerHTML = `<span style="flex:1">${d}</span><span style="flex:2">${g.date.gregorian.day}</span><span style="flex:1">${ims}</span><span style="flex:1;color:#ffd700">${ift}</span>`;
         liste.appendChild(row);
     });
-}
-
-function sayacBaslat() {
-    if(window.t) clearInterval(window.t);
-    window.t = setInterval(() => {
-        const suan = new Date();
-        const hedef = new Date();
-        const [h, m] = window.targetIftar.split(':');
-        hedef.setHours(h, m, 0);
-        let fark = hedef - suan;
-        if(fark < 0) { document.getElementById('sayaç').innerText = "00:00:00"; return; }
-        const hh = Math.floor(fark/3600000).toString().padStart(2,'0');
-        const mm = Math.floor((fark%3600000)/60000).toString().padStart(2,'0');
-        const ss = Math.floor((fark%60000)/1000).toString().padStart(2,'0');
-        document.getElementById('sayaç').innerText = `${hh}:${mm}:${ss}`;
-    }, 1000);
 }
