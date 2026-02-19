@@ -1,50 +1,45 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body { font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: hidden; background: #000; color: white; }
 
-/* Şehre Özel Arka Plan */
 .city-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background-size: cover; background-position: center;
-    filter: brightness(0.4) blur(2px); z-index: -2;
-    transition: 1s ease-in-out;
+    filter: brightness(0.4) blur(3px); z-index: -2; transition: 1.5s;
 }
 
-/* Dönen Dünya Animasyonu */
+/* Dünya Animasyonu */
 .world-container {
-    position: relative; width: 100%; height: 280px;
-    display: flex; align-items: center; justify-content: center;
-    overflow: hidden; margin-top: 10px;
+    position: relative; width: 100%; height: 260px;
+    display: flex; align-items: center; justify-content: center; margin-top: 20px;
 }
-
 .earth {
-    width: 220px; height: 220px;
-    background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/The_Earth_seen_from_Apollo_17.jpg/1200px-The_Earth_seen_from_Apollo_17.jpg');
+    width: 200px; height: 200px;
+    background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Earth_Western_Hemisphere_transparent_background.png/1200px-Earth_Western_Hemisphere_transparent_background.png');
     background-size: cover; border-radius: 50%;
-    box-shadow: inset -20px -20px 50px #000, 0 0 50px rgba(100, 149, 237, 0.3);
-    animation: rotateEarth 20s linear infinite;
+    box-shadow: inset -10px -10px 40px #000, 0 0 30px rgba(100, 149, 237, 0.4);
+    animation: rotate 15s linear infinite;
 }
+@keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-@keyframes rotateEarth {
-    from { background-position: 0 0; }
-    to { background-position: 440px 0; }
-}
+.counter-overlay { position: absolute; text-align: center; }
+#sayaç { font-size: 3.5rem; font-weight: 900; color: #fff; text-shadow: 0 0 20px #000; }
 
-.counter-overlay {
-    position: absolute; text-align: center; z-index: 5;
-    text-shadow: 0 0 15px rgba(0,0,0,0.8);
-}
-
-#sayaç { font-size: 3.5rem; font-weight: 900; letter-spacing: -1px; }
-
-/* Arayüz Elemanları */
+/* Liste ve Kartlar */
 .app-content { width: 92%; margin: auto; height: 100%; display: flex; flex-direction: column; }
 .vakit-kartlari { display: flex; gap: 10px; margin: 15px 0; }
-.v-box { flex: 1; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 15px; text-align: center; border-bottom: 3px solid #ffd700; backdrop-filter: blur(5px); }
-.menu-kart { background: rgba(255,215,0,0.15); padding: 15px; border-radius: 15px; border-left: 5px solid #ffd700; margin-bottom: 15px; }
-.imsakiye-liste { background: rgba(0,0,0,0.5); border-radius: 20px; padding: 15px; flex-grow: 1; overflow-y: auto; margin-bottom: 10px; }
+.v-box { flex: 1; background: rgba(0,0,0,0.7); padding: 15px; border-radius: 15px; text-align: center; border-bottom: 3px solid #ffd700; }
+.imsakiye-liste { 
+    background: rgba(0,0,0,0.6); border-radius: 20px; padding: 15px; 
+    flex-grow: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; 
+}
 
-/* Seçim Alanı */
-.modal { display: none; position: fixed; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; align-items: center; justify-content: center; }
-.modal-ic { background: #fff; padding: 25px; border-radius: 25px; width: 85%; color: #333; }
-select { width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 10px; font-size: 1rem; border: 1px solid #ddd; }
-.kaydet-btn { width: 100%; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 10px; font-weight: bold; }
+/* Modal Kaydırma Fix */
+.modal { display: none; position: fixed; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; }
+.modal-ic { background: #fff; padding: 25px; border-radius: 30px; width: 88%; color: #333; max-height: 80vh; overflow: hidden; display: flex; flex-direction: column; }
+.scroll-fix { overflow-y: auto; flex-grow: 1; padding: 10px 0; }
+select { 
+    width: 100%; padding: 16px; margin-bottom: 12px; border-radius: 15px; 
+    font-size: 16px; border: 2px solid #eee; background: #fdfdfd; 
+}
+.kaydet-btn { width: 100%; padding: 16px; background: #27ae60; color: white; border: none; border-radius: 15px; font-weight: bold; }
+.kapat-btn { padding: 10px; background: none; border: none; color: #999; margin-top: 5px; }
