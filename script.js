@@ -1,64 +1,56 @@
-// Rehber Veri Havuzu
 const rehberVerisi = {
-    ayetler: [
-        "Ey iman edenler! Allah’a karşı gelmekten sakınmanız için oruç, sizden öncekilere farz kılındığı gibi size de farz kılındı. (Bakara 183)",
-        "Ramazan ayı, insanlar için bir hidayet rehberi olan Kur’an’ın indirildiği aydır. (Bakara 185)",
-        "Kullarım beni senden sorarlarsa, bilsinler ki ben onlara çok yakınım. (Bakara 186)"
-    ],
-    hadisler: [
-        "Oruç tutan bir kimse, yalan konuşmayı bırakmazsa, Allah'ın onun yemesini içmesini bırakmasına ihtiyacı yoktur.",
-        "Ramazan ayı geldiğinde cennet kapıları açılır, cehennem kapıları kapanır.",
-        "Oruçlu için iki sevinç vardır: Biri iftar ettiği andaki sevinç, diğeri Rabbine kavuştuğu andaki sevinç."
-    ],
-    dualar: [
-        "Allahım! Senin rızan için oruç tuttum, senin rızkınla iftar ettim.",
-        "Ey kalpleri çekip çeviren Rabbim! Kalbimi dinin üzere sabit kıl.",
-        "Allahım! Sen affedicisin, affetmeyi seversin, beni de affet."
-    ]
+    ayetler: ["Allah sabredenlerle beraberdir.", "Oruç tutun sıhhat bulun.", "Şüphesiz her zorlukla beraber bir kolaylık vardır."],
+    dualar: ["Allahım bize dünyada ve ahirette iyilik ver.", "Rabbim ilmimi artır.", "Ey Rabbimiz, bizi doğru yola ilet."]
 };
 
 document.addEventListener("deviceready", () => {
-    const permissions = cordova.plugins.permissions;
-    permissions.requestPermission(permissions.ACCESS_FINE_LOCATION, (s) => s.hasPermission && konumAl());
+    themeKontrol();
+    konumAl();
 }, false);
 
-function rehberGuncelle() {
-    const gun = new Date().getDate() % rehberVerisi.ayetler.length;
-    document.getElementById('gunun-ayeti').innerText = rehberVerisi.ayetler[gun];
-    document.getElementById('gunun-hadisi').innerText = rehberVerisi.hadisler[gun];
-    document.getElementById('gunun-duasi').innerText = rehberVerisi.dualar[gun];
+// Saate göre tema değiştirme
+function themeKontrol() {
+    const saat = new Date().getHours();
+    const body = document.getElementById('body-bg');
+    
+    if (saat >= 6 && saat < 17) {
+        body.className = 'sky-day';
+    } else if (saat >= 17 && saat < 20) {
+        body.className = 'sky-sunset';
+    } else {
+        body.className = 'sky-night';
+    }
 }
 
 function konumAl() {
     navigator.geolocation.getCurrentPosition(pos => {
-        imsakiyeYukle(pos.coords.latitude, pos.coords.longitude, "📍 Mevcut Konum");
+        imsakiyeYukle(pos.coords.latitude, pos.coords.longitude, "📍 Konumunuz");
     }, () => imsakiyeYukle(41.0082, 28.9784, "İstanbul (Varsayılan)"), { timeout: 10000 });
 }
 
 async function imsakiyeYukle(lat, lng, baslik) {
     const bugun = new Date();
-    try {
-        const res = await fetch(`https://api.aladhan.com/v1/calendar?latitude=${lat}&longitude=${lng}&method=13&month=${bugun.getMonth()+1}&year=${bugun.getFullYear()}`);
-        const data = await res.json();
-        const imsakiyeBody = document.getElementById('imsakiye-body');
-        imsakiyeBody.innerHTML = "";
+    const res = await fetch(`https://api.aladhan.com/v1/calendar?latitude=${lat}&longitude=${lng}&method=13&month=${bugun.getMonth()+1}&year=${bugun.getFullYear()}`);
+    const data = await res.json();
+    
+    const imsakiyeBody = document.getElementById('imsakiye-body');
+    imsakiyeBody.innerHTML = "";
 
-        data.data.forEach((gun) => {
-            const d = parseInt(gun.date.gregorian.day);
-            const row = document.createElement('div');
-            row.className = 'imsakiye-row';
-            if (d === bugun.getDate()) {
-                document.getElementById('imsak-vakit').innerText = gun.timings.Imsak.split(' ')[0];
-                document.getElementById('iftar-vakit').innerText = gun.timings.Maghrib.split(' ')[0];
-                document.getElementById('sehir').innerText = baslik;
-                geriSayimiBaslat(gun.timings.Maghrib.split(' ')[0]);
-                row.style.background = "#e9456044";
-            }
-            row.innerHTML = `<span>${d}</span><span>${gun.date.gregorian.month.en.substring(0,3)}</span><span>${gun.timings.Imsak.split(' ')[0]}</span><span style="color:#ffd700">${gun.timings.Maghrib.split(' ')[0]}</span>`;
-            imsakiyeBody.appendChild(row);
-        });
-        rehberGuncelle();
-    } catch (e) { document.getElementById('sehir').innerText = "Hata!"; }
+    data.data.forEach((gun) => {
+        const d = parseInt(gun.date.gregorian.day);
+        if (d === bugun.getDate()) {
+            document.getElementById('imsak-vakit').innerText = gun.timings.Imsak.split(' ')[0];
+            document.getElementById('iftar-vakit').innerText = gun.timings.Maghrib.split(' ')[0];
+            document.getElementById('sehir').innerText = baslik;
+            geriSayimiBaslat(gun.timings.Maghrib.split(' ')[0]);
+        }
+        const row = `<div class="imsakiye-row"><span>${d}</span><span>${gun.date.gregorian.month.en.slice(0,3)}</span><span>${gun.timings.Imsak.split(' ')[0]}</span><span>${gun.timings.Maghrib.split(' ')[0]}</span></div>`;
+        imsakiyeBody.innerHTML += row;
+    });
+    
+    const idx = bugun.getDate() % rehberVerisi.ayetler.length;
+    document.getElementById('gunun-ayeti').innerText = rehberVerisi.ayetler[idx];
+    document.getElementById('gunun-duasi').innerText = rehberVerisi.dualar[idx];
 }
 
 let sayac;
@@ -72,5 +64,7 @@ function geriSayimiBaslat(iftar) {
     }, 1000);
 }
 
+setInterval(themeKontrol, 60000); // Her dakika temayı kontrol et
+themeKontrol(); 
 document.getElementById('tarih').innerText = new Date().toLocaleDateString('tr-TR');
-if(!window.cordova) { konumAl(); rehberGuncelle(); }
+if(!window.cordova) konumAl();
