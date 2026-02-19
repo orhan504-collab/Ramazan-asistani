@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ramazan Asistanı Pro</title>
+    <title>Ramazan Asistanı</title>
     <link rel="stylesheet" href="style.css">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#1a1a2e">
 </head>
 <body>
     <div class="container">
@@ -16,11 +14,11 @@
         </header>
 
         <section class="vakitler">
-            <div class="kart imsak">
+            <div class="kart">
                 <span>İmsak</span>
                 <strong id="imsak-vakit">--:--</strong>
             </div>
-            <div class="kart iftar">
+            <div class="kart">
                 <span>İftar</span>
                 <strong id="iftar-vakit">--:--</strong>
             </div>
@@ -29,7 +27,6 @@
         <section class="sayac-alan">
             <h3>İftara Kalan Süre</h3>
             <div id="kalan-sure">00:00:00</div>
-            <div class="progress-bar"><div id="bar" style="width: 0%"></div></div>
         </section>
 
         <button onclick="konumAl()" class="btn-konum">Konumu Güncelle</button>
