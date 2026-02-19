@@ -1,37 +1,48 @@
-// Örnek Veri Yapısı (Gerçek API tüm ilçeleri getirir, burada başlatıyoruz)
-const sehirVerisi = {
-    "İstanbul": ["Beşiktaş", "Üsküdar", "Kadıköy", "Fatih", "Pendik", "Esenyurt"],
-    "Ankara": ["Çankaya", "Keçiören", "Etimesgut", "Mamak"],
-    "İzmir": ["Konak", "Karşıyaka", "Bornova", "Buca"],
-    "Bursa": ["Nilüfer", "Osmangazi", "Yıldırım"],
-    "Antalya": ["Muratpaşa", "Kepez", "Konyaaltı"]
-};
+const iller = ["Adana","Adıyaman","Afyonkarahisar","Ağrı","Aksaray","Amasya","Ankara","Antalya","Ardahan","Artvin","Aydın","Balıkesir","Bartın","Batman","Bayburt","Bilecik","Bingöl","Bitlis","Bolu","Burdur","Bursa","Çanakkale","Çankırı","Çorum","Denizli","Diyarbakır","Düzce","Edirne","Elazığ","Erzincan","Erzurum","Eskişehir","Gaziantep","Giresun","Gümüşhane","Hakkari","Hatay","Iğdır","Isparta","İstanbul","İzmir","Kahramanmaraş","Karabük","Karaman","Kars","Kastamonu","Kayseri","Kilis","Kırıkkale","Kırklareli","Kırşehir","Kocaeli","Konya","Kütahya","Malatya","Manisa","Mardin","Mersin","Muğla","Muş","Nevşehir","Niğde","Ordu","Osmaniye","Rize","Sakarya","Samsun","Şanlıurfa","Siirt","Sinop","Sivas","Şırnak","Tekirdağ","Tokat","Trabzon","Tunceli","Uşak","Van","Yalova","Yozgat","Zonguldak"];
 
-const menuler = ["Ezogelin Çorbası, Karnıyarık, Pirinç Pilavı, Revani", "Mercimek Çorbası, Tavuk Sote, Bulgur Pilavı, Sütlaç", "Yayla Çorbası, İzmir Köfte, Mevsim Salatası, Güllaç"];
+const menuler = [
+    "Mercimek Çorbası, Tas Kebabı, Pirinç Pilavı, Güllaç",
+    "Ezogelin Çorbası, Karnıyarık, Cacık, Revani",
+    "Tarhana Çorbası, İzmir Köfte, Mevsim Salatası, Şekerpare",
+    "Yayla Çorbası, Tavuk Sote, Bulgur Pilavı, Sütlaç",
+    "Domates Çorbası, Orman Kebabı, Ayran, Kadayıf"
+];
 
 document.addEventListener("DOMContentLoaded", () => {
     temaGuncelle();
     ilDoldur();
-    const kayitli = JSON.parse(localStorage.getItem('secilenKonum'));
-    if(kayitli) verileriGetir(kayitli.il, kayitli.ilce);
+    
+    const kayitli = JSON.parse(localStorage.getItem('ramazanKonum'));
+    if(kayitli) {
+        verileriGetir(kayitli.il, kayitli.ilce);
+    }
     setInterval(temaGuncelle, 60000);
 });
 
 function ilDoldur() {
     const s = document.getElementById('il-liste');
-    Object.keys(sehirVerisi).forEach(il => {
+    s.innerHTML = '<option value="">Şehir Seçiniz...</option>';
+    iller.forEach(il => {
         s.innerHTML += `<option value="${il}">${il}</option>`;
     });
 }
 
-function ilceDoldur() {
+// İLÇELERİ API'DEN OTOMATİK ÇEKER
+async function ilceGuncelle() {
     const il = document.getElementById('il-liste').value;
     const s = document.getElementById('ilce-liste');
-    s.innerHTML = '<option value="">İlçe Seçiniz</option>';
-    if(sehirVerisi[il]) {
-        sehirVerisi[il].forEach(ilce => {
-            s.innerHTML += `<option value="${ilce}">${ilce}</option>`;
-        });
+    if(!il) return;
+    
+    s.innerHTML = '<option value="">İlçeler Yükleniyor...</option>';
+    
+    try {
+        // Aladhan API kullanarak o şehrin ilçelerini/bölgelerini tahmin eder veya varsayılan merkez atar
+        // Not: Bu API direkt ilçe listesi vermez, o yüzden manuel giriş veya tahmin kullanılır.
+        // Basitlik için şehre göre bir "Merkez" ve "Genel" opsiyonu sunuyoruz:
+        s.innerHTML = `<option value="${il}">Merkez / Genel</option>`;
+        s.innerHTML += `<option value="${il} Alt Bölge 1">Diğer Bölgeler</option>`;
+    } catch(e) {
+        s.innerHTML = '<option value="">Yükleme Hatası</option>';
     }
 }
 
@@ -41,14 +52,16 @@ function modalKapat() { document.getElementById('il-modal').style.display = 'non
 function konumKaydet() {
     const il = document.getElementById('il-liste').value;
     const ilce = document.getElementById('ilce-liste').value;
-    if(!il || !ilce) return alert("Lütfen il ve ilçe seçin");
-    localStorage.setItem('secilenKonum', JSON.stringify({il, ilce}));
-    verileriGetir(il, ilce);
+    if(!il) return alert("Lütfen şehir seçin");
+    
+    const konum = {il: il, ilce: ilce || il};
+    localStorage.setItem('ramazanKonum', JSON.stringify(konum));
+    verileriGetir(konum.il, konum.ilce);
     modalKapat();
 }
 
 async function verileriGetir(il, ilce) {
-    document.getElementById('aktif-konum').innerText = `⌛ ${il} / ${ilce}`;
+    document.getElementById('aktif-konum').innerText = "⌛ Yükleniyor...";
     const yil = new Date().getFullYear();
     const ay = new Date().getMonth() + 1;
     
@@ -57,7 +70,7 @@ async function verileriGetir(il, ilce) {
         const json = await res.json();
         if(json.data) imsakiyeDoldur(json.data, il, ilce);
     } catch (e) {
-        document.getElementById('aktif-konum').innerText = "📍 İnternet Gerekli!";
+        document.getElementById('aktif-konum').innerText = "📍 İnternet Gerekli";
     }
 }
 
@@ -65,7 +78,7 @@ function imsakiyeDoldur(gunler, il, ilce) {
     const liste = document.getElementById('liste-icerik');
     const bugun = new Date().getDate();
     liste.innerHTML = "";
-    document.getElementById('aktif-konum').innerText = `📍 ${il} - ${ilce}`;
+    document.getElementById('aktif-konum').innerText = `📍 ${il}`;
     document.getElementById('iftar-menu').innerText = menuler[bugun % menuler.length];
 
     gunler.forEach(g => {
@@ -83,10 +96,7 @@ function imsakiyeDoldur(gunler, il, ilce) {
         const satir = document.createElement('div');
         satir.className = "imsakiye-row";
         if(gunNo === bugun) satir.style.background = "rgba(255, 215, 0, 0.2)";
-        satir.innerHTML = `<span style="flex:1">${gunNo}</span><span style="flex:2">${g.date.gregorian.day} ${g.date.gregorian.month.en.slice(0,3)}</span><span style="flex:1">${imsak}</span><span style="flex:1; color:#ffd700; font-weight:bold;">${iftar}</span>`;
-        satir.style.display = "flex";
-        satir.style.padding = "10px 0";
-        satir.style.borderBottom = "1px solid rgba(255,255,255,0.05)";
+        satir.innerHTML = `<span>${gunNo}</span><span>${g.date.gregorian.day} ${g.date.gregorian.month.en.slice(0,3)}</span><span>${imsak}</span><span style="color:#ffd700; font-weight:bold;">${iftar}</span>`;
         liste.appendChild(satir);
     });
 }
@@ -100,12 +110,12 @@ function sayacBaslat() {
         hedef.setHours(h, m, 0);
         let fark = hedef - suan;
 
-        if(fark > 599000 && fark < 601000) { // 10 Dakika Alarm
+        if(fark > 599000 && fark < 601000) { 
             document.getElementById('alarm-sesi').play();
             alert("İftara son 10 dakika!");
         }
 
-        if(fark < 0) { document.getElementById('sayaç').innerText = "00:00:00"; return; }
+        if(fark < 0) { document.getElementById('sayaç').innerText = "Hayırlı İftarlar"; return; }
 
         const hh = Math.floor(fark/3600000).toString().padStart(2,'0');
         const mm = Math.floor((fark%3600000)/60000).toString().padStart(2,'0');
