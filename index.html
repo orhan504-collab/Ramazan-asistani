@@ -3,47 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ezanlı Ramazan Pro</title>
+    <title>Ramazan Pro Max</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body id="main-body">
     <div id="city-bg" class="city-overlay"></div>
     
-    <div class="app-content">
-        <div class="world-container">
-            <div class="earth"></div>
-            <div class="counter-overlay" onclick="modalAc()">
+    <div class="app-container">
+        <div class="world-section">
+            <div class="earth-sphere"></div>
+            <div class="counter-box" onclick="modalAc()">
                 <div id="aktif-konum">Konum Seç 📍</div>
                 <h1 id="sayaç">00:00:00</h1>
-                <p id="durum-etiketi">Vakit Bekleniyor...</p>
+                <p id="durum-etiketi">Yükleniyor...</p>
             </div>
         </div>
 
-        <div class="vakit-kartlari">
-            <div class="v-box"><span>İmsak</span><b id="t-imsak">--:--</b></div>
-            <div class="v-box iftar"><span>İftar</span><b id="t-iftar">--:--</b></div>
+        <div class="vakit-row">
+            <div class="v-card"><span>İmsak</span><b id="t-imsak">--:--</b></div>
+            <div class="v-card iftar-highlight"><span>İftar</span><b id="t-iftar">--:--</b></div>
         </div>
 
-        <div class="menu-kart">
-            <h4>🍽️ Günün İftar Menüsü</h4>
-            <p id="iftar-menu">Konum seçince hazırlanacak...</p>
+        <div class="menu-box">
+            <h5>🌙 Günün İftar Menüsü</h5>
+            <p id="iftar-menu">Şehir seçiniz...</p>
         </div>
 
-        <div class="imsakiye-liste">
-            <div class="liste-baslik"><span>GÜN</span><span>TARİH</span><span>İMSAK</span><span>İFTAR</span></div>
-            <div id="liste-icerik"></div>
+        <div class="imsakiye-container">
+            <div class="liste-header">
+                <span>GÜN</span><span>TARİH</span><span>İMSAK</span><span>İFTAR</span>
+            </div>
+            <div id="liste-icerik">
+                </div>
         </div>
     </div>
 
-    <div id="il-modal" class="modal">
-        <div class="modal-ic">
+    <div id="il-modal" class="modal-overlay">
+        <div class="modal-content">
             <h3>Konumunuzu Belirleyin</h3>
-            <div class="scroll-fix">
-                <select id="il-liste" onchange="ilceYukle()"></select>
+            <div class="select-wrapper">
+                <select id="il-liste" onchange="ilceGuncelle()"></select>
                 <select id="ilce-liste"></select>
             </div>
-            <button class="kaydet-btn" onclick="konumKaydet()">KAYDET VE BAŞLAT</button>
-            <button class="kapat-btn" onclick="modalKapat()">KAPAT</button>
+            <button class="btn-save" onclick="konumKaydet()">AYARLARI KAYDET</button>
+            <button class="btn-close" onclick="modalKapat()">KAPAT</button>
         </div>
     </div>
 
