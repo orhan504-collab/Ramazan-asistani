@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ramazan Asistanı & İmsakiye</title>
+    <title>Ramazan Asistanı Pro</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,10 +23,20 @@
                 <p>İftara Kalan Süre</p>
                 <div id="kalan-sure">00:00:00</div>
             </div>
+        </div>
 
-            <div class="actions">
-                <button onclick="konumAl()" class="btn-sm">🔄 Yenile</button>
-                <button onclick="manuelSehir()" class="btn-sm">🏙️ Şehir Değiştir</button>
+        <div class="rehber-card">
+            <div class="rehber-item">
+                <h4>📖 Günün Ayeti</h4>
+                <p id="gunun-ayeti">Yükleniyor...</p>
+            </div>
+            <div class="rehber-item">
+                <h4>💬 Günün Hadisi</h4>
+                <p id="gunun-hadisi">Yükleniyor...</p>
+            </div>
+            <div class="rehber-item">
+                <h4>🤲 Günün Duası</h4>
+                <p id="gunun-duasi">Yükleniyor...</p>
             </div>
         </div>
 
@@ -38,8 +48,12 @@
                 <span>İmsak</span>
                 <span>İftar</span>
             </div>
-            <div id="imsakiye-body">
-                </div>
+            <div id="imsakiye-body"></div>
+        </div>
+        
+        <div class="actions">
+            <button onclick="konumAl()" class="btn-sm">🔄 Yenile</button>
+            <button onclick="manuelSehir()" class="btn-sm">🏙️ Şehir Değiştir</button>
         </div>
     </div>
     <script src="script.js"></script>
