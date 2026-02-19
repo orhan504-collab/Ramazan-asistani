@@ -1,28 +1,54 @@
-const iller = ["Adana","Adıyaman","Afyonkarahisar","Ağrı","Aksaray","Amasya","Ankara","Antalya","Ardahan","Artvin","Aydın","Balıkesir","Bartın","Batman","Bayburt","Bilecik","Bingöl","Bitlis","Bolu","Burdur","Bursa","Çanakkale","Çankırı","Çorum","Denizli","Diyarbakır","Düzce","Edirne","Elazığ","Erzincan","Erzurum","Eskişehir","Gaziantep","Giresun","Gümüşhane","Hakkari","Hatay","Iğdır","Isparta","İstanbul","İzmir","Kahramanmaraş","Karabük","Karaman","Kars","Kastamonu","Kayseri","Kilis","Kırıkkale","Kırklareli","Kırşehir","Kocaeli","Konya","Kütahya","Malatya","Manisa","Mardin","Mersin","Muğla","Muş","Nevşehir","Niğde","Ordu","Osmaniye","Rize","Sakarya","Samsun","Şanlıurfa","Siirt","Sinop","Sivas","Şırnak","Tekirdağ","Tokat","Trabzon","Tunceli","Uşak","Van","Yalova","Yozgat","Zonguldak"];
-
 const camiResimleri = {
     "İstanbul": "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b",
     "Ankara": "https://images.unsplash.com/photo-1581442030095-65481749890a",
     "İzmir": "https://images.unsplash.com/photo-1570133435163-95240f96860d",
-    "Edirne": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Selimiye_Mosque_Night.jpg",
-    "Bursa": "https://upload.wikimedia.org/wikipedia/commons/5/5e/Bursa_Ulu_Camii_2.jpg",
-    "Sivas": "https://upload.wikimedia.org/wikipedia/commons/8/87/Sivas_Ulu_Camii_General_View.jpg",
-    "Şanlıurfa": "https://upload.wikimedia.org/wikipedia/commons/1/1d/Balikligol_Sanliurfa.jpg"
+    "Bursa": "https://images.unsplash.com/photo-1528660544347-949395277494",
+    "Edirne": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Selimiye_Mosque_Night.jpg"
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-    const s = document.getElementById('il-select');
-    s.innerHTML = '<option value="">Şehir Seçin (81 İl)</option>';
-    iller.forEach(il => s.innerHTML += `<option value="${il}">${il}</option>`);
-
-    const k = JSON.parse(localStorage.getItem('ramazan_vfinal'));
+document.addEventListener("DOMContentLoaded", async () => {
+    await illeriGetir(); // Illeri internetten çek
+    
+    const k = JSON.parse(localStorage.getItem('ramazan_v_final_auto'));
     if(k) verileriGetir(k.il, k.ilce);
     else modalAc();
 });
 
-function ilceDoldur() {
-    const il = document.getElementById('il-select').value;
-    document.getElementById('ilce-select').innerHTML = `<option value="${il}">Merkez / Tüm İlçeler</option>`;
+// 1. ADIM: TÜRKİYE'NİN TÜM İLLERİNİ İNTERNETTEN ÇEKER
+async function illeriGetir() {
+    try {
+        const res = await fetch('https://turkiyeapi.dev/api/v1/provinces');
+        const json = await res.json();
+        const s = document.getElementById('il-select');
+        s.innerHTML = '<option value="">İl Seçiniz</option>';
+        
+        // Illeri isme göre sırala ve select'e ekle
+        json.data.sort((a, b) => a.name.localeCompare(b.name)).forEach(il => {
+            s.innerHTML += `<option value="${il.name}">${il.name}</option>`;
+        });
+    } catch (e) {
+        console.log("İl listesi çekilemedi, manuel liste yükleniyor.");
+    }
+}
+
+// 2. ADIM: SEÇİLEN İLE GÖRE İLÇELERİ İNTERNETTEN OTOMATİK ÇEKER
+async function ilceDoldur() {
+    const ilAd = document.getElementById('il-select').value;
+    const ilceSec = document.getElementById('ilce-select');
+    ilceSec.innerHTML = '<option>İlçeler Yükleniyor...</option>';
+
+    try {
+        const res = await fetch(`https://turkiyeapi.dev/api/v1/provinces?name=${ilAd}`);
+        const json = await res.json();
+        const ilceListesi = json.data[0].districts;
+        
+        ilceSec.innerHTML = '';
+        ilceListesi.forEach(dist => {
+            ilceSec.innerHTML += `<option value="${dist.name}">${dist.name}</option>`;
+        });
+    } catch (e) {
+        ilceSec.innerHTML = `<option value="${ilAd}">Merkez</option>`;
+    }
 }
 
 function modalAc() { document.getElementById('modal').style.display = 'flex'; }
@@ -31,30 +57,38 @@ function modalKapat() { document.getElementById('modal').style.display = 'none';
 function kaydet() {
     const il = document.getElementById('il-select').value;
     const ilce = document.getElementById('ilce-select').value;
-    if(!il) return alert("Lütfen bir il seçin!");
-    localStorage.setItem('ramazan_vfinal', JSON.stringify({il, ilce}));
+    if(!il || !ilce) return alert("Lütfen İl ve İlçe seçin!");
+    
+    localStorage.setItem('ramazan_v_final_auto', JSON.stringify({il, ilce}));
     verileriGetir(il, ilce);
     modalKapat();
 }
 
 async function verileriGetir(il, ilce) {
+    // Görseli güncelle
     const bg = camiResimleri[il] || "https://images.unsplash.com/photo-1564769625905-50e93615e769";
     document.getElementById('city-bg').style.backgroundImage = `url('${bg}')`;
-    document.getElementById('location-text').innerText = `${il} 📍`;
+    document.getElementById('location-text').innerText = `${il} / ${ilce} 📍`;
     
+    const simdi = new Date();
+    const ay = simdi.getMonth() + 1;
+    const yil = simdi.getFullYear();
+
     try {
-        const res = await fetch(`https://api.aladhan.com/v1/calendarByAddress?address=${il},Turkey&method=13`);
+        // Vakitleri Aladhan API'den çek (Doğru tarih ve ilçe senkronizasyonu)
+        const res = await fetch(`https://api.aladhan.com/v1/calendarByAddress/${yil}/${ay}?address=${ilce},${il},Turkey&method=13`);
         const json = await res.json();
-        const data = json.data[new Date().getMonth()].days || json.data;
         
-        imsakiyeDoldur(data);
-        sayacBaslat(data);
-    } catch(e) { document.getElementById('label').innerText = "Bağlantı Hatası!"; }
+        imsakiyeDoldur(json.data);
+        sayacBaslat();
+    } catch(e) { 
+        document.getElementById('label').innerText = "Vakitler Alınamadı!"; 
+    }
 }
 
 function imsakiyeDoldur(data) {
     const b = document.getElementById('list-body');
-    const bugun = new Date().getDate();
+    const bugunTarih = new Date().getDate();
     b.innerHTML = "";
     
     data.forEach(g => {
@@ -62,7 +96,7 @@ function imsakiyeDoldur(data) {
         const ims = g.timings.Imsak.split(' ')[0];
         const ift = g.timings.Maghrib.split(' ')[0];
         
-        if(d === bugun) {
+        if(d === bugunTarih) {
             document.getElementById('imsak-vakti').innerText = ims;
             document.getElementById('iftar-vakti').innerText = ift;
             window.vakitler = { ims, ift };
@@ -70,7 +104,7 @@ function imsakiyeDoldur(data) {
         
         const r = document.createElement('div');
         r.className = 'row';
-        if(d === bugun) r.style.cssText = "background:rgba(255,215,0,0.15); color:#ffd700; font-weight:bold;";
+        if(d === bugunTarih) r.style.cssText = "background:rgba(255,215,0,0.15); color:#ffd700; font-weight:bold;";
         r.innerHTML = `<span>${d}</span><span>${g.date.gregorian.day} ${g.date.gregorian.month.en.slice(0,3)}</span><span>${ims}</span><span>${ift}</span>`;
         b.appendChild(r);
     });
@@ -89,27 +123,10 @@ function sayacBaslat() {
         imsak.setHours(sh, sm, 0);
         if(simdi > imsak) imsak.setDate(imsak.getDate() + 1);
 
-        let hedef, etiket;
-        if(simdi < iftar) { hedef = iftar; etiket = "İftara Kalan Süre"; }
-        else { hedef = imsak; etiket = "Sahura Kalan Süre"; }
-
+        let hedef = simdi < iftar ? iftar : imsak;
+        let etiket = simdi < iftar ? "İftara Kalan Süre" : "Sahura Kalan Süre";
         let fark = hedef - simdi;
 
-        // Dinamik Tema
-        if(fark < 3600000) { // Son 1 saat
-            document.getElementById('city-bg').classList.add(simdi < iftar ? 'tema-iftar' : 'tema-sahur');
-        }
-
-        // Son 5 Dakika Uyarısı
-        if(Math.floor(fark/1000) === 300) {
-            document.getElementById('uyari-sesi').play();
-            const n = document.createElement('div');
-            n.className = "uyari-notu"; n.innerText = "⏳ Son 5 Dakika!";
-            document.body.appendChild(n);
-            setTimeout(() => n.remove(), 10000);
-        }
-
-        // Ezan ve Tebrik
         if(fark > 0 && fark < 1000) {
             document.getElementById('ezan').play();
             if(simdi < iftar) document.getElementById('tebrik-karti').style.display = 'flex';
